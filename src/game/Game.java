@@ -1,7 +1,6 @@
 package game;
-import java.util.ArrayList;
-
 import gui.MonsterBattleGUI;
+import java.util.ArrayList;
 
 /**
  * Game - YOUR monster battle game!
@@ -26,6 +25,8 @@ public class Game {
     private ArrayList<Item> inventory;
     private int playerHealth;
     private int maxHealth;
+    private int playerDamage;
+    private int playerHeal;
     
     /**
      * Main method - start YOUR game!
@@ -51,6 +52,7 @@ public class Game {
     private void setupGame() {
         // Create the GUI
         gui = new MonsterBattleGUI("Monster Battle - MY GAME");
+        int numMonsters = chooseDifficulty();
         
         // TODO: Setup player health
         maxHealth = 100;  // Change this if you want
@@ -58,10 +60,8 @@ public class Game {
         gui.setPlayerMaxHealth(maxHealth);
         gui.updatePlayerHealth(playerHealth);
         
-        // TODO: Create monsters - how many do you want?
         monsters = new ArrayList<>();
-        monsters.add(new Monster());  // Add more monsters here!
-        monsters.add(new Monster());
+        for(int k = 0; k < numMonsters; k++) monsters.add(new Monster());
         gui.updateMonsters(monsters);
         
         // TODO: Create starting items
@@ -74,7 +74,7 @@ public class Game {
         gui.setActionButtons(buttons);
         
         // Welcome message
-        gui.displayMessage("Battle Start! Choose your action.");
+        gui.displayMessage("Welcome to Owen's Monster Game!");
     }
     
     /**
@@ -115,6 +115,44 @@ public class Game {
      * 
      * TODO: What happens for each action?
      */
+        /**
+     * Let player choose difficulty (number of monsters) using the 4 buttons
+     * This demonstrates using the GUI for menu choices!
+     */
+    private int chooseDifficulty() {
+        // Set button labels to difficulty levels
+        String[] difficulties = {"Easy (2)", "Medium (3)", "Hard (4)", "Extreme (5)"};
+        gui.setActionButtons(difficulties);
+        
+        // Display choice prompt
+        gui.displayMessage("---- CHOOSE DIFFICULTY ----");
+        
+        // Wait for player to click a button (0-3)
+        int choice = gui.waitForAction();
+        int numMonsters = 0;
+        switch(choice){
+            case 0:
+            numMonsters = (int)(Math.random() * (4-2+1)) + 2;
+                break;
+            case 1:
+                numMonsters = (int)(Math.random() * (5-4+1)) + 4;
+                break;
+            case 2:
+                numMonsters = (int)(Math.random() * (8-6+1)) + 6;
+                break;
+            case 3:
+                numMonsters = (int)(Math.random() * (15-10+1)) + 10;
+                break;
+        }
+        // Determine number of monsters based on choice
+        //int numMonsters = 2 + choice;  // 2, 3, 4, or 5 monsters
+        
+        gui.displayMessage("You will face " + numMonsters +  " monsters!");
+        gui.pause(1500);
+        
+        return numMonsters;
+    }        
+    
     private void handlePlayerAction(int action) {
         switch (action) {
             case 0: // Attack button
@@ -142,6 +180,9 @@ public class Game {
      */
     private void attackMonster() {
         // TODO: Implement your attack!
+        Monster target = lowestHealthMonster();
+        int baseDamage = (int)(playerDamage * 0.15);
+        target.health() = target.health() - baseDamage; 
         // Hint: Look at GameDemo.java for an example
         
         gui.displayMessage("TODO: Implement attack!");
@@ -210,6 +251,15 @@ public class Game {
     /**
      * Count how many monsters are still alive
      */
+    private Monster lowestHealthMonster(){
+        int lowest = 100;
+        Monster monsternum = null;
+        for (Monster m : monsters){
+            if (m.health() < lowest && m.health() > 0) monsternum = m;
+        }
+        return monsternum;
+    }
+
     private int countLivingMonsters() {
         int count = 0;
         for (Monster m : monsters) {

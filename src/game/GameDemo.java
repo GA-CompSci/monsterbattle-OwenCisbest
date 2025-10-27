@@ -1,7 +1,6 @@
 package game;
-import java.util.ArrayList;
-
 import gui.MonsterBattleGUI;
+import java.util.ArrayList;
 
 /**
  * GameDemo - Complete working example of a monster battle game
