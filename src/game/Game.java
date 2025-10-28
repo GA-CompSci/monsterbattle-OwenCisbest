@@ -1,7 +1,6 @@
 package game;
 import gui.MonsterBattleGUI;
 import java.util.ArrayList;
-
 /**
  * Game - YOUR monster battle game!
  * 
@@ -26,7 +25,9 @@ public class Game {
     private int playerHealth;
     private int maxHealth;
     private int playerDamage;
+    private int playerShield;
     private int playerHeal;
+    private int playerSpeed;
     
     /**
      * Main method - start YOUR game!
@@ -57,6 +58,7 @@ public class Game {
         // TODO: Setup player health
         maxHealth = 100;  // Change this if you want
         playerHealth = 100;
+        playerDamage = 125;
         gui.setPlayerMaxHealth(maxHealth);
         gui.updatePlayerHealth(playerHealth);
         
@@ -70,7 +72,10 @@ public class Game {
         gui.updateInventory(inventory);
         
         // TODO: Customize button labels
-        String[] buttons = {"Attack", "Defend", "Heal", "Use Item"};
+        String[] buttons = {"Attack (" + playerDamage + ")",
+                            "Defend (" + playerShield + ")",
+                            "Heal (" + playerHeal + ")",
+                            "Use Item"};
         gui.setActionButtons(buttons);
         
         // Welcome message
@@ -182,10 +187,15 @@ public class Game {
         // TODO: Implement your attack!
         Monster target = lowestHealthMonster();
         int baseDamage = (int)(playerDamage * 0.15);
-        target.health() = target.health() - baseDamage; 
+        int damage = baseDamage + (int)(Math.random() * baseDamage);
+        target.takeDamage(damage);
+        int index = monsters.indexOf(target);
+        gui.highlightMonster(index);
+        gui.pause(670);
+        
         // Hint: Look at GameDemo.java for an example
         
-        gui.displayMessage("TODO: Implement attack!");
+        gui.displayMessage("You dealt for " + damage + " damage!");
     }
     
     /**
@@ -198,6 +208,7 @@ public class Game {
      */
     private void defend() {
         // TODO: Implement your defend!
+        
         
         gui.displayMessage("TODO: Implement defend!");
     }
@@ -240,9 +251,17 @@ public class Game {
      */
     private void monsterAttack() {
         // TODO: Implement monster attacks!
+        double monsterdamage = 0;
+        int minMonsterSpeed = 0;
+
+        for(Monster m : monsters){
+            if (m.speed() > minMonsterSpeed) monsterdamage = m.damage();
+        }
+
         // Hint: Look at GameDemo.java for an example
-        
-        gui.displayMessage("TODO: Implement monster attack!");
+        playerHealth -= monsterdamage;
+        gui.displayMessage("Monster dealt " + monsterdamage + " damage.");
+        gui.updatePlayerHealth(playerHealth);
     }
     
     // ==================== HELPER METHODS ====================
@@ -266,6 +285,24 @@ public class Game {
             if (m.health() > 0) count++;
         }
         return count;
+    }
+    
+    //Returns ArrayList of monsters with specials
+    private ArrayList<Monster> getSpecialMonsters(){
+        ArrayList<Monster> specialMonsters = new ArrayList<>();
+        for(Monster m : monsters){
+            if(m.special() != null && !m.special().equals("") && m.health() > 0) specialMonsters.add(m);
+        }
+        return specialMonsters;
+    }
+
+    //Returns ArrayList of monsters with a speed greater than the player
+    private ArrayList<Monster> getSpeedyMonsters(){
+        ArrayList<Monster> speedyMonsters = new ArrayList<>();
+        for(Monster m : monsters){
+            if(m.speed() > playerSpeed && m.health() > 0) speedyMonsters.add(m);
+        }
+        return speedyMonsters;
     }
     
     /**
