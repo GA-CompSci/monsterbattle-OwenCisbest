@@ -28,7 +28,7 @@ public class Game {
     private int playerShield;
     private int playerHeal;
     private int playerSpeed;
-    
+    private boolean shieldup;
     /**
      * Main method - start YOUR game!
      */
@@ -91,7 +91,8 @@ public class Game {
     private void gameLoop() {
         // Keep playing while monsters alive and player alive
         while (countLivingMonsters() > 0 && playerHealth > 0) {
-            
+            shieldup = false;
+
             // PLAYER'S TURN
             gui.displayMessage("Your turn! HP: " + playerHealth);
             int action = gui.waitForAction();  // Wait for button click (0-3)
@@ -208,7 +209,7 @@ public class Game {
      */
     private void defend() {
         // TODO: Implement your defend!
-        
+        shieldup = true;
         
         gui.displayMessage("TODO: Implement defend!");
     }
@@ -222,8 +223,12 @@ public class Game {
      */
     private void heal() {
         // TODO: Implement your heal!
-        
-        gui.displayMessage("TODO: Implement heal!");
+        int min = 10;
+        int max = 40;
+        int heal = (int)(Math.random() * max - min + 1) + min;
+        playerHealth += heal;
+        gui.displayMessage("You healed for " + heal + "HP!");
+        gui.updatePlayerHealth(playerHealth);
     }
     
     /**

@@ -177,7 +177,7 @@ public class GameDemo {
     private void gameLoop() {
         // Keep playing while monsters alive and player alive
         while (countLivingMonsters() > 0 && playerHealth > 0) {
-            
+
             // PLAYER'S TURN
             gui.displayMessage("Your turn! HP: " + playerHealth + " | DMG: " + playerDamage);
             int action = gui.waitForAction();  // Wait for button click
