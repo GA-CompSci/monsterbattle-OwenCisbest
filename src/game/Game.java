@@ -338,6 +338,13 @@ public class Game {
                 gui.displayMessage("Monster hits you for " + damageTaken + " damage!");
                 gui.updatePlayerHealth(playerHealth);
             }
+            if(monster.special().equals("Vampire")){
+                monster.health += damageTaken/5;
+            }
+            else if(monster.special().equals("Mason 67 Mango")){
+                monster.health -= 100000;
+                gui.displayMessage("whoopsies, it appears mason 67 mango monster has been obliterated");
+            }
             int index = monsters.indexOf(monster);
             gui.highlightMonster(index);
             gui.pause(300);
