@@ -54,7 +54,7 @@ public class Game {
      */
     private void setupGame() {
         // Create the GUI
-        gui = new MonsterBattleGUI("Monster Battle - Mr. A");
+        gui = new MonsterBattleGUI("Monster Battle - Owen C.");
 
         // CHOOSE DIFFICULTY (number of monsters to face)
         int numMonsters = chooseDifficulty();
@@ -339,12 +339,15 @@ public class Game {
                 gui.updatePlayerHealth(playerHealth);
             }
             if(monster.special().equals("Vampire")){
-                monster.health += damageTaken/5;
+                monster.takeDamage(-damageTaken/5);
             }
             else if(monster.special().equals("Mason 67 Mango")){
-                monster.health -= 100000;
+                monster.takeDamage(100000);
                 gui.displayMessage("whoopsies, it appears mason 67 mango monster has been obliterated");
             }
+            //else if(monster.special().equals("Undead medic")){
+              //  monster
+           // }
             int index = monsters.indexOf(monster);
             gui.highlightMonster(index);
             gui.pause(300);
@@ -359,6 +362,13 @@ public class Game {
     /**
      * Count how many monsters are still alive
      */
+    private ArrayList<Monster> monstersAboveHealth(ArrayList<Monster> monsters){
+        ArrayList<Monster> monstersabove = new ArrayList<>();
+        for(int i = 0; i <= monsters.size(); i++){
+            if(monsters.get(i).health() > 10) monstersabove.add(monsters.get(i));
+        }
+        return monstersabove;
+    }
     private int countLivingMonsters() {
         int count = 0;
         for (Monster m : monsters) {
