@@ -60,14 +60,18 @@ public class Game {
         int numMonsters = chooseDifficulty();
         monsters = new ArrayList<>();
         // Should we add special abilities? 
-        for(int k = 0; k < numMonsters; k++) {
-            if(k == 0) {
-                // add a monster with a special ability
+        for (int k = 0; k < numMonsters; k++) {
+            double num = randomize();
+            if (num > 0.90) {
                 monsters.add(new Monster("Vampire"));
-            }else {
-                monsters.add(new Monster());
             }
-            
+            else if(num < 0.03){
+                monsters.add(new Monster("Mason 67 Mango"));
+            }
+            else if(num < 0.07){
+                monsters.add(new Monster("Bomber"));
+            }
+            else monsters.add(new Monster());
         }
         gui.updateMonsters(monsters);  
 
@@ -333,17 +337,31 @@ public class Game {
                 shieldPower -= absorbance;
                 gui.displayMessage("You block for " + absorbance + " damage. You have " + shieldPower + " shield left.");
             }
-            if (damageTaken > 0) {
-                playerHealth -= damageTaken;
-                gui.displayMessage("Monster hits you for " + damageTaken + " damage!");
-                gui.updatePlayerHealth(playerHealth);
-            }
             if(monster.special().equals("Vampire")){
                 monster.takeDamage(-damageTaken/5);
             }
             else if(monster.special().equals("Mason 67 Mango")){
-                monster.takeDamage(100000);
-                gui.displayMessage("whoopsies, it appears mason 67 mango monster has been obliterated");
+                double chance = randomize();
+                if(chance < 0.02){
+                    double doublechance = randomize();
+                    if(doublechance > 0.98){
+                        monster.takeDamage(100000);
+                        gui.displayMessage("whoopsies, it appears mason 67 mango monster has been obliterated");                        
+                    }
+                }
+
+
+            }
+            else if(monster.special().equals("Bomber")){
+                damageTaken += 15;
+                monster.takeDamage(monster.health());
+
+            }          
+            if (damageTaken > 0) {
+                playerHealth -= damageTaken;
+                gui.displayMessage("Monster hits you for " + damageTaken + " damage!");
+                gui.updatePlayerHealth(playerHealth);
+
             }
             //else if(monster.special().equals("Undead medic")){
               //  monster
@@ -415,4 +433,8 @@ public class Game {
     // - Method to check if player has a specific item
     // - Method to add special effects
     // - etc.
+    public static double randomize(){
+        double num = Math.random();
+        return num;
+    }
 }

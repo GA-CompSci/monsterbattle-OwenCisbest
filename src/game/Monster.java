@@ -1,7 +1,7 @@
 package game;
 public class Monster {
     // INSTANCE VARIABLES (properties)
-    private int health;
+    public int health;
     private double damage;
     private int speed;
     private String special; 
