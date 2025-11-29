@@ -23,13 +23,15 @@ public class Game {
     // Game state - YOU manage these
     private ArrayList<Monster> monsters;
     private Monster lastAttacked; // store the monster we last attacked so it can respond
-    private double shieldPower = 0;
+    private int shieldPower = 0;
     private ArrayList<Item> inventory;
     private int playerHealth;
     private int playerSpeed;
     private int playerDamage;
     private int playerHeal;    
     private int playerShield;
+    private String playerClass = "";
+    private int specialCooldown = 0;
     
     /**
      * Main method - start YOUR game!
@@ -118,6 +120,7 @@ public class Game {
                 monsterAttack();
                 gui.updateMonsters(monsters);
                 gui.pause(500);
+                if (specialCooldown > 0) specialCooldown--;
             }
         }
         
@@ -189,21 +192,25 @@ public class Game {
         
         // Customize stats based on character choice
         if (choice == 0) {
+            playerClass = "Fighter";
             // Fighter: high damage, low healing and shield
             gui.displayMessage("You chose Fighter! High damage, but weak defense.");
             playerShield -= (int)(Math.random() * 20 + 1) + 5;  // Reduce shield by 5-25
             playerHeal -= (int)(Math.random() * 20 + 1) + 5;        // Reduce heal by 5-25
         } else if (choice == 1) {
+            playerClass = "Tank";
             // Tank: high shield, low damage and speed
             gui.displayMessage("You chose Tank! Tough defense, but slow attacks.");
             playerSpeed -= (int)(Math.random() * 9) + 1;        // Reduce speed by 1-9
             playerDamage -= (int)(Math.random() * 20 + 1) + 5;   // Reduce damage by 5-25
         } else if (choice == 2) {
+            playerClass = "Healer";
             // Healer: high healing, low damage and shield
             gui.displayMessage("You chose Healer! Great recovery, but fragile.");
             playerDamage -= (int)(Math.random() * 21) + 5;      // Reduce damage by 5-25
             playerShield -= (int)(Math.random() * 21) + 5;      // Reduce shield by 5-25
         } else {
+            playerClass = "Ninja";
             // Ninja: high speed, low healing and health
             gui.displayMessage("You chose Ninja! Fast and deadly, but risky.");
             playerHeal -= (int)(Math.random() * 21) + 5;        // Reduce heal by 5-25
@@ -233,8 +240,8 @@ public class Game {
             case 2: // Heal button
                 heal();
                 break;
-            case 3: // Use Item button
-                useItem();
+            case 3: // Special ability button
+                useSpecial();
                 break;
         }
     }
@@ -301,18 +308,46 @@ public class Game {
     }
     
     /**
-     * Use an item from inventory
+     * Use class special ability if cooldown is at 0
      */
-    private void useItem() {
-        if (inventory.isEmpty()) {
-            gui.displayMessage("No items in inventory!");
+    private void useSpecial() {
+        if (specialCooldown > 0) {
+            gui.displayMessage("Special on cooldown for " + specialCooldown + " more turns.");
             return;
         }
         
-        // Use first item
-        Item item = inventory.remove(0);
-        gui.updateInventory(inventory);
-        item.use();  // The item knows what to do!
+        switch(playerClass) {
+            case "Fighter":
+                Monster target = getRandomLivingMonster();
+                if (target != null && target.health() > 0) {
+                    int dmg = playerDamage * 2;
+                    target.takeDamage(dmg);
+                    gui.displayMessage("Power Strike! You dealt " + dmg + " extra damage!");
+                    specialCooldown = 3;
+                }
+                break;
+            case "Tank":
+                shieldPower = playerShield * 3;
+                gui.displayMessage("Fortify! Shield strength now at " + shieldPower);
+                specialCooldown = 4;
+                break;
+            case "Healer":
+                playerHealth += playerHeal * 3;
+                if (playerHealth > 100) playerHealth = 100; // TODO: use actual max. Idk if imma actually change this later, just cuz im lazy.
+                gui.displayMessage("Mega Heal! You just healed for " + (playerHeal * 3) + " health!");
+                gui.updatePlayerHealth(playerHealth);
+                specialCooldown = 3;
+                break;
+            case "Ninja":
+                Monster specialtarget = getRandomLivingMonster();
+                if (specialtarget != null) {
+                    int specialdamage = (int)(playerDamage * 1.5);
+                    specialtarget.takeDamage(specialdamage);
+                    gui.displayMessage("Ambush! " + specialdamage + " damage!");
+                    specialCooldown = 2;
+                }
+                break;
+        }
     }
     
     /**
@@ -339,6 +374,7 @@ public class Game {
             }
             if(monster.special().equals("Vampire")){
                 monster.takeDamage(-damageTaken/5);
+                gui.displayMessage("The vampire uses some of your damage to heal itself for " + damageTaken/5 + " health!");            
             }
             else if(monster.special().equals("Mason 67 Mango")){
                 double chance = randomize();
@@ -355,6 +391,7 @@ public class Game {
             else if(monster.special().equals("Bomber")){
                 damageTaken += 15;
                 monster.takeDamage(monster.health());
+                gui.displayMessage("It appears the bomber has exploded, killing itself, but dealing an extra 15 damage!");            
 
             }          
             if (damageTaken > 0) {
