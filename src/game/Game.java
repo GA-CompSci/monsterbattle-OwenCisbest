@@ -90,7 +90,7 @@ public class Game {
         String[] buttons = {"Attack (" + playerDamage + ")", 
                             "Defend (" + playerShield + ")", 
                             "Heal (" + playerHeal + ")", 
-                            "Use Item"};
+                            "Use Special"};
         gui.setActionButtons(buttons);
         
         // Welcome message
